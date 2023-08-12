@@ -1,26 +1,27 @@
 #include "mttopt.hpp"
 
-mttopt_opt::mttopt_opt()
+mttopt_opt_t::mttopt_opt_t()
+	: shrt(0), flags(0), found(false), arg(nullptr)
 {
 
 }
 
-mttopt_opt::mttopt_opt(char shrt, char flags)
-	: shrt(shrt), flags(flags)
+mttopt_opt_t::mttopt_opt_t(uint8_t shrt, uint8_t flags)
+	: shrt(shrt), flags(flags), found(false), arg(nullptr)
 {
 
 }
 
-std::size_t mttopt_extr_optv(int argc, char *argv[], mttopt_optv &optv)
+int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv)
 {
-	char **av, **avc, *arg, *a, ac;
-	mttopt_opt *ov, *ovc;
+	char **av, **avc, *arg, *a;
+	struct mttopt_opt_t *ov, *ovc;
+	uint8_t ac, flags;
 
 	if (argv == nullptr) return 0;
 
 	av = argv + 1;
 	avc = argv + argc;
-
 	ovc = optv.data() + optv.size();
 	
 	while (av < avc)
@@ -48,61 +49,58 @@ std::size_t mttopt_extr_optv(int argc, char *argv[], mttopt_optv &optv)
 				{
 					if (ac == ov->shrt)
 					{
+						flags = ov->flags;
+
 						if (ov->found)
 						{
-							if (ov->flags & IGNORE_COPIES)
+							if (flags & OPT_FLAGS_IGNORE_COPIES)
 							{
-								if (ov->flags & MUST_HAVE_ARG)
+								if (flags & OPT_FLAGS_CAN_HAVE_ARG)
 								{
-									a++;
-									ac = *a;
+									if (flags & OPT_FLAGS_MUST_HAVE_ARG)
+									{
+										a++;
 
-									if (ac == 0) av++;
+										if (*a == 0) av++;
+									}
 
 									goto next;
 								}
-								else if (ov->flags & CAN_HAVE_ARG) goto next;
 
 								break;
 							}
-							else if (ov->flags & EXIT_ON_COPY)
+							else if (flags & OPT_FLAGS_EXIT_ON_COPY)
 							{
 								av++;
 
-								if (ov->flags & MUST_HAVE_ARG)
+								if (flags & OPT_FLAGS_MUST_HAVE_ARG)
 								{
 									a++;
-									ac = *a;
 
-									if (ac == 0) av++;
+									if (*a == 0) av++;
 								}
 
 								goto exit;
 							}
 						}
 
-						ov->found = true;
+						ov->found = 1;
 
-						if (ov->flags & CAN_HAVE_ARG)
+						if (flags & OPT_FLAGS_CAN_HAVE_ARG)
 						{
 							a++;
-							ac = *a;
-							ov->arg = ac ? a : nullptr;
 
-							goto next;
-						}
-						else if (ov->flags & MUST_HAVE_ARG)
-						{
-							a++;
-							ac = *a;
-
-							if (ac) ov->arg = a;
-							else
+							if ((flags & OPT_FLAGS_MUST_HAVE_ARG) == 12)
 							{
-								av++;
-								ov->arg = *av;
+								if (*a) ov->arg = a;
+								else
+								{
+									av++;
+									ov->arg = *av;
+								}
 							}
-							
+							else ov->arg = *a ? a : nullptr;
+
 							goto next;
 						}
 
