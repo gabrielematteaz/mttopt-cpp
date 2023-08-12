@@ -1,5 +1,5 @@
-#ifndef MTTOPT_H
-#define MTTOPT_H
+#ifndef MTTOPT_HPP
+#define MTTOPT_HPP
 
 #include <vector>
 
