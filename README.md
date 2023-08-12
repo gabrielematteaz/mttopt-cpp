@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
 	while (av < avc)
 	{
-		puts(*av);
+		std::cout << *av << std::endl;
 		av++;
 	}
 
