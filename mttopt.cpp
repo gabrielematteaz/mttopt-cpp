@@ -1,36 +1,31 @@
 #include "mttopt.hpp"
 
-mttopt_opt_t::mttopt_opt_t()
+mttopt_opt_t::mttopt_opt_t() noexcept
 	: shrt(0), flags(0), found(false), arg(nullptr)
 {
 
 }
 
-mttopt_opt_t::mttopt_opt_t(uint8_t shrt, uint8_t flags)
+mttopt_opt_t::mttopt_opt_t(uint8_t shrt, uint8_t flags) noexcept
 	: shrt(shrt), flags(flags), found(false), arg(nullptr)
 {
 
 }
 
-int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv)
+int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept
 {
-	char **av, **avc, *arg, *a;
-	struct mttopt_opt_t *ov, *ovc;
-	uint8_t ac, flags;
-
 	if (argv == nullptr) return 0;
 
-	av = argv + 1;
-	avc = argv + argc;
-	ovc = optv.data() + optv.size();
+	char **av = argv + 1, **avc = argv + argc;
+	mttopt_opt_t *ovc = optv.data() + optv.size();
 	
 	while (av < avc)
 	{
-		arg = *av;
+		char *arg = *av;
 
 		if (*arg == '-')
 		{
-			a = arg + 1;
+			char *a = arg + 1;
 
 			if (*a == '-')
 			{
@@ -39,17 +34,17 @@ int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv)
 				break;
 			}
 
-			ac = *a;
+			char ac = *a;
 
 			while (ac)
 			{
-				ov = optv.data();
+				mttopt_opt_t *ov = optv.data();
 
 				while (ov < ovc)
 				{
 					if (ac == ov->shrt)
 					{
-						flags = ov->flags;
+						uint8_t flags = ov->flags;
 
 						if (ov->found)
 						{

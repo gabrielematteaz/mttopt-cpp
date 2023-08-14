@@ -10,8 +10,8 @@ struct mttopt_opt_t
 	bool found;
 	const char *arg;
 
-	mttopt_opt_t();
-	mttopt_opt_t(uint8_t shrt, uint8_t flags);
+	mttopt_opt_t() noexcept;
+	mttopt_opt_t(uint8_t shrt, uint8_t flags) noexcept;
 };
 
 #define OPT_FLAGS_OVERWRITE_ON_COPY 0
@@ -21,8 +21,8 @@ struct mttopt_opt_t
 #define OPT_FLAGS_CAN_HAVE_ARG 4
 #define OPT_FLAGS_MUST_HAVE_ARG 12
 
-using mttopt_optv_t = std::vector<mttopt_opt_t>;
+using mttopt_optv_t = std::vector < mttopt_opt_t >;
 
-int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv);
+int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept;
 
 #endif
