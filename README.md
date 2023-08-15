@@ -1,9 +1,9 @@
-# mttoptcpp
+# mttopt-cpp
 C++ version of "mttopt"
 
 # Example
 ```cpp
-#include "mttlib/mttopt/mttopt.hpp"
+#include "mttopt.hpp"
 #include <iostream>
 
 int main(int argc, char *argv[])
