@@ -1,29 +1,5 @@
 #include "mttopt.hpp"
 
-mttopt_opt_t::mttopt_opt_t() noexcept
-	: shrt(0), flags(0), found(false), arg(nullptr)
-{
-
-}
-
-mttopt_opt_t::mttopt_opt_t(char shrt, uint8_t flags) noexcept
-	: shrt(shrt), flags(flags), found(false), arg(nullptr)
-{
-
-}
-
-mttopt_wopt_t::mttopt_wopt_t() noexcept
-	: wshrt(0), flags(0), found(false), warg(nullptr)
-{
-
-}
-
-mttopt_wopt_t::mttopt_wopt_t(wchar_t shrt, uint8_t flags) noexcept
-	: wshrt(shrt), flags(flags), found(false), warg(nullptr)
-{
-
-}
-
 int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept
 {
 	if (argv == nullptr) return 0;
@@ -56,15 +32,15 @@ int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept
 				{
 					if (ac == ov->shrt)
 					{
-						uint8_t flags = ov->flags;
+						int fs = ov->fs;
 
 						if (ov->found)
 						{
-							if (flags & OPT_FLAGS_IGNORE_COPIES)
+							if (fs & OPT_FS_IGNORE_COPIES)
 							{
-								if (flags & OPT_FLAGS_CAN_HAVE_ARG)
+								if (fs & OPT_FS_CAN_HAVE_ARG)
 								{
-									if (flags & OPT_FLAGS_MUST_HAVE_ARG)
+									if (fs & OPT_FS_MUST_HAVE_ARG)
 									{
 										a++;
 
@@ -76,11 +52,11 @@ int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept
 
 								break;
 							}
-							else if (flags & OPT_FLAGS_EXIT_ON_COPY)
+							else if (fs & OPT_FS_EXIT_ON_COPY)
 							{
 								av++;
 
-								if (flags & OPT_FLAGS_MUST_HAVE_ARG)
+								if (fs & OPT_FS_MUST_HAVE_ARG)
 								{
 									a++;
 
@@ -91,13 +67,13 @@ int mttopt_extr_optv(int argc, char *argv[], mttopt_optv_t &optv) noexcept
 							}
 						}
 
-						ov->found = true;
+						ov->found = 1;
 
-						if (flags & OPT_FLAGS_CAN_HAVE_ARG)
+						if (fs & OPT_FS_CAN_HAVE_ARG)
 						{
 							a++;
 
-							if ((flags & OPT_FLAGS_MUST_HAVE_ARG) == 12)
+							if ((fs & OPT_FS_MUST_HAVE_ARG) == 12)
 							{
 								if (*a) ov->arg = a;
 								else
@@ -163,17 +139,17 @@ int mttopt_extr_woptv(int wargc, wchar_t *wargv[], mttopt_woptv_t &woptv) noexce
 
 				while (wov < wovc)
 				{
-					if (wac == wov->wshrt)
+					if (wac == wov->shrt)
 					{
-						uint8_t flags = wov->flags;
+						int fs = wov->fs;
 
 						if (wov->found)
 						{
-							if (flags & OPT_FLAGS_IGNORE_COPIES)
+							if (fs & OPT_FS_IGNORE_COPIES)
 							{
-								if (flags & OPT_FLAGS_CAN_HAVE_ARG)
+								if (fs & OPT_FS_CAN_HAVE_ARG)
 								{
-									if (flags & OPT_FLAGS_MUST_HAVE_ARG)
+									if (fs & OPT_FS_MUST_HAVE_ARG)
 									{
 										wa++;
 
@@ -185,11 +161,11 @@ int mttopt_extr_woptv(int wargc, wchar_t *wargv[], mttopt_woptv_t &woptv) noexce
 
 								break;
 							}
-							else if (flags & OPT_FLAGS_EXIT_ON_COPY)
+							else if (fs & OPT_FS_EXIT_ON_COPY)
 							{
 								wav++;
 
-								if (flags & OPT_FLAGS_MUST_HAVE_ARG)
+								if (fs & OPT_FS_MUST_HAVE_ARG)
 								{
 									wa++;
 
@@ -200,27 +176,27 @@ int mttopt_extr_woptv(int wargc, wchar_t *wargv[], mttopt_woptv_t &woptv) noexce
 							}
 						}
 
-						wov->found = true;
+						wov->found = 1;
 
-						if (flags & OPT_FLAGS_CAN_HAVE_ARG)
+						if (fs & OPT_FS_CAN_HAVE_ARG)
 						{
 							wa++;
 
-							if ((flags & OPT_FLAGS_MUST_HAVE_ARG) == 12)
+							if ((fs & OPT_FS_MUST_HAVE_ARG) == 12)
 							{
-								if (*wa) wov->warg = wa;
+								if (*wa) wov->arg = wa;
 								else
 								{
 									wav++;
-									wov->warg = *wav;
+									wov->arg = *wav;
 								}
 							}
-							else wov->warg = *wa ? wa : nullptr;
+							else wov->arg = *wa ? wa : nullptr;
 
 							goto next;
 						}
 
-						wov->warg = nullptr;
+						wov->arg = nullptr;
 
 						break;
 					}
